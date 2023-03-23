@@ -1,6 +1,7 @@
 from app.main import bp
+from flask import render_template
 
 
-@bp.route('/')
+@bp.route('/about')
 def index():
-    return 'It is auth!'
+    return render_template('about.html', title='About')
