@@ -7,7 +7,8 @@ Clone the repository
 ```commandline
 git clone https://github.com/LazevAnton/FlaskAPP.git
 ```
-cd FlaskAPP
+Install project dependencies
 ```commandline
+cd FlaskAPP
 pip3 install -r requirements.txt
 ```
