@@ -1,5 +1,5 @@
 from app.auth import bp
-from flask import render_template, redirect
+from flask import render_template, redirect,url_for
 from .forms import LoginForm, RegisterForm
 
 
@@ -12,7 +12,7 @@ def index():
 def login():
     form = LoginForm()
     if form.validate_on_submit():
-        return redirect('/index')
+        return redirect(url_for('index'))
     return render_template('auth/login.html', title='Login', form=form)
 
 
@@ -20,6 +20,6 @@ def login():
 def register():
     form = RegisterForm()
     if form.validate_on_submit():
-        return redirect('/index')
+        return redirect(url_for('index'))
     return render_template('auth/register.html', title='Register', form=form)
 
