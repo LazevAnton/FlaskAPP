@@ -8,6 +8,7 @@ from wtforms import (
     EmailField
 )
 
+
 class LoginForm(FlaskForm):
     username = StringField('Username', validators=[validators.DataRequired()])
     password = PasswordField('Password', validators=[validators.DataRequired()])
