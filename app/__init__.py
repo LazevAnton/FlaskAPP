@@ -1,4 +1,5 @@
 from flask import Flask
+from flask_login import current_user
 from config import Config
 
 
@@ -9,6 +10,12 @@ def create_app():
     app.register_blueprint(auth_bp)
     from .main import bp as main_bp
     app.register_blueprint(main_bp)
+
+    @app.context_processor
+    def context_processor():
+        return dict(
+            current_user=current_user
+        )
     return app
 
 

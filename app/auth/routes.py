@@ -12,7 +12,7 @@ def index():
 def login():
     form = LoginForm()
     if form.validate_on_submit():
-        return redirect(url_for('index'))
+        return redirect(url_for('auth.index'))
     return render_template('auth/login.html', title='Login', form=form)
 
 
@@ -20,6 +20,6 @@ def login():
 def register():
     form = RegisterForm()
     if form.validate_on_submit():
-        return redirect(url_for('index'))
+        return redirect(url_for('auth.index'))
     return render_template('auth/register.html', title='Register', form=form)
 
