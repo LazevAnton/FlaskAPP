@@ -25,6 +25,12 @@ def index():
         },
     ]
     for data in flask_users:
+        user_data = db.session.query(User).filter(
+            User.username == data.get('username'),
+            User.email == data.get('email')
+        )
+        if user_data:
+            continue
         user_data = User(
             username=data.get('username'),
             email=data.get('email'),
