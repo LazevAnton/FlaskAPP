@@ -4,7 +4,7 @@ from flask import Blueprint
 from faker import Faker
 from app.models import User
 
-bp = Blueprint('fake', __name__)
+bp = Blueprint('faker', __name__)
 faker = Faker()
 
 
