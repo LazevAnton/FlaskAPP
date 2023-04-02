@@ -17,7 +17,9 @@ def create_app():
     app.register_blueprint(auth_bp)
     from .main import bp as main_bp
     app.register_blueprint(main_bp)
-    from . models import User  # noqa
+    from .models import User  # noqa
+    from .fake_data import bp as fake_bp
+    app.register_blueprint(fake_bp)
 
     @app.context_processor
     def context_processor():
