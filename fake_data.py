@@ -14,7 +14,8 @@ def create_fake_users(num):
     users = []
     username = faker.user_name()
     email = faker.email()
-    for user in range(num):
+    # passwdord = faker.password()
+    for u in range(num):
         user = (
             db.session.query(User).filter(
                 User.username == username,
@@ -24,9 +25,11 @@ def create_fake_users(num):
         if not user:
             user = User(
                 username=username,
-                email=email
+                email=email,
+                # password=passwdord
             )
-        db.session.add('user')
-        users.append(user)
+            db.session.add('user')
+            users.append(user)
     db.session.commit()
-    print(num, 'users added ')
+    print(num, f'users added. ')
+
