@@ -11,3 +11,4 @@ Flask-SQLAlchemy==3.0.3
 Faker==18.3.2
 Flake8==6.0.0
 Flask-Migrate==4.0.4
+psycopg-binary==3.1.8
