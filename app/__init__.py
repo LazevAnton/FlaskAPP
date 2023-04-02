@@ -4,7 +4,6 @@ from config import Config
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 
-
 db = SQLAlchemy()
 migrate = Migrate()
 
@@ -18,7 +17,7 @@ def create_app():
     app.register_blueprint(auth_bp)
     from .main import bp as main_bp
     app.register_blueprint(main_bp)
-    from .models import User
+    from . models import User  # noqa
 
     @app.context_processor
     def context_processor():
