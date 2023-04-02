@@ -4,18 +4,18 @@ from flask import Blueprint
 from faker import Faker
 from app.models import User
 
-bp = Blueprint('faker', __name__)
+bp = Blueprint('fake', __name__)
 faker = Faker()
 
 
-@bp.cli.command("users")
+@bp.cli.command("create_fake_users")
 @click.argument('num', type=int)
 def create_fake_users(num):
     users = []
-    username = faker.user_name()
-    email = faker.email()
-    # passwdord = faker.password()
     for u in range(num):
+        username = faker.user_name()
+        email = faker.email()
+        password = faker.password()
         user = (
             db.session.query(User).filter(
                 User.username == username,
@@ -26,10 +26,9 @@ def create_fake_users(num):
             user = User(
                 username=username,
                 email=email,
-                # password=passwdord
+                password=password
             )
-            db.session.add('user')
+            db.session.add(user)
             users.append(user)
     db.session.commit()
-    print(num, f'users added. ')
-
+    print(num, 'users added. ')
