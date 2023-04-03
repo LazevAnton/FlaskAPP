@@ -1,9 +1,14 @@
 from app import db
+from flask_login import UserMixin
 from werkzeug.security import generate_password_hash, check_password_hash
 
 
-class User(db.Model):
+class BaseModel(db.Model):
+    __abstract__ = True
     id = db.Column(db.Integer, primary_key=True)
+
+
+class User(BaseModel, UserMixin):
     username = db.Column(db.String, unique=True, index=True)
     email = db.Column(db.String, unique=True, index=True)
     password = db.Column(db.String, nullable=False)
@@ -16,3 +21,10 @@ class User(db.Model):
 
     def __repr__(self):
         return f'{self.username} - {self.email}'
+
+
+class Profile(BaseModel):
+    first_name = db.Column(db.String, index=True)
+    last_name = db.Column(db.String, index=True)
+    linkedin_url = db.Column(db.String)
+    facebook_url = db.Column(db.String)
