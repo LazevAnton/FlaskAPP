@@ -1,9 +1,8 @@
 from flask import Flask
-from flask_login import current_user,LoginManager
+from flask_login import current_user, LoginManager
 from config import Config
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
-
 
 db = SQLAlchemy()
 migrate = Migrate()
@@ -19,14 +18,16 @@ def create_app():
     app.register_blueprint(auth_bp)
     from .main import bp as main_bp
     app.register_blueprint(main_bp)
-    from .models import User  # noqa
+    # from .models import User  # noqa
+    # from .models import Profile  # noqa
+    from . import models
     from .fake_data import bp as fake_bp
     app.register_blueprint(fake_bp)
     login_manager.init_app(app)
 
     @login_manager.user_loader
     def load_user(user_id):
-        return User.get(user_id)
+        return models.User.query.get(user_id)
 
     @app.context_processor
     def context_processor():
