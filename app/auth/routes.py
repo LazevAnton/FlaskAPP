@@ -22,7 +22,7 @@ def login():
             flash("Invalid username/password", category="error")
             return redirect(url_for("auth.login"))
         login_user(user, remember=form.remember.data)
-        return redirect(url_for('main.index'))
+        return redirect(url_for('main.profile'))
     return render_template('auth/login.html', title='Login', form=form)
 
 

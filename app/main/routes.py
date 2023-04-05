@@ -8,10 +8,7 @@ from app import db
 @bp.route('/')
 @bp.route('/index')
 def index():
-    user_query = db.session.query(User)
-    users = user_query.all()
-    print(users)
-    return render_template('index.html', users=users,title='Profile')
+    return render_template('index.html', title='MainPage')
 
 
 @bp.route('/about')
@@ -21,7 +18,10 @@ def about():
 
 @bp.route('/profile')
 def profile():
-    return render_template('profile.html', title='Profile')
+    user_query = db.session.query(User)
+    users = user_query.all()
+    print(users)
+    return render_template('profile.html', users=users, title='Profile')
 
 
 @bp.route('/edit_profile', methods=['GET', 'POST'])
