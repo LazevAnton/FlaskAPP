@@ -24,7 +24,18 @@ class User(BaseModel, UserMixin):
 
 
 class Profile(BaseModel):
-    first_name = db.Column(db.String, index=True)
-    last_name = db.Column(db.String, index=True)
-    linkedin_url = db.Column(db.String)
+    __tablename__ = 'profiles'
+    __table_args__ = (
+        db.Index("idx_profiles_user_id", "user_id"),
+    )
+
+    user_id = db.Column(
+        db.Integer,
+        db.ForeignKey('user.id', name='fk_profiles_user_id'),
+        nullable=False
+    )
+    first_name = db.Column(db.String)
+    last_name = db.Column(db.String)
+    linkedIn_url = db.Column(db.String)
     facebook_url = db.Column(db.String)
+    user = db.relationship("User", backref="profile", uselist=False)
