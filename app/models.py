@@ -20,7 +20,7 @@ class User(BaseModel, UserMixin):
         return check_password_hash(self.password, password)
 
     def __repr__(self):
-        return f'{self.username} - {self.email}'
+        return f'{self.username}'
 
 
 class Profile(BaseModel):
@@ -39,4 +39,5 @@ class Profile(BaseModel):
     linkedIn_url = db.Column(db.String)
     facebook_url = db.Column(db.String)
     bio = db.Column(db.String)
-    user = db.relationship("User", backref="profile", uselist=False)
+    # user = db.relationship("User", backref="profile", uselist=False)
+    user = db.relationship("User", backref=db.backref("profile", uselist=False), uselist=False)
