@@ -7,7 +7,6 @@ from wtforms import (
     SubmitField,
     EmailField
 )
-from wtforms.validators import Length
 
 
 class LoginForm(FlaskForm):
