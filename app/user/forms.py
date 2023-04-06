@@ -9,7 +9,7 @@ from wtforms import (
 from wtforms.validators import Length
 
 
-class EditProfileForm(FlaskForm):
+class ProfileForm(FlaskForm):
     first_name = StringField("First Name")
     last_name = StringField("Last Name")
     linkedin_url = StringField('Linkedin')
