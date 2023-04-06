@@ -18,11 +18,11 @@ def create_app():
     app.register_blueprint(auth_bp)
     from .main import bp as main_bp
     app.register_blueprint(main_bp)
-    # from .models import User  # noqa
-    # from .models import Profile  # noqa
     from . import models
     from .fake_data import bp as fake_bp
     app.register_blueprint(fake_bp)
+    from . user import bp as user_bp
+    app.register_blueprint(user_bp)
     login_manager.init_app(app)
 
     @login_manager.user_loader
