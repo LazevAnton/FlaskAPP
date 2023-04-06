@@ -3,7 +3,7 @@ from flask import render_template, redirect, url_for, flash
 from .forms import LoginForm, RegisterForm
 from flask_login import current_user, login_user, logout_user
 from .. import db
-from ..models import User
+from ..models import User, Profile
 
 
 @bp.route('/')
@@ -22,7 +22,7 @@ def login():
             flash("Invalid username/password", category="error")
             return redirect(url_for("auth.login"))
         login_user(user, remember=form.remember.data)
-        return redirect(url_for('user.profile'))
+        return redirect(url_for('user.profile', username=user.username))
     return render_template('auth/login.html', title='Login', form=form)
 
 
@@ -40,6 +40,11 @@ def register():
         user = User(username=form.username.data, email=form.email.data)
         user.set_password(form.password.data)
         db.session.add(user)
+        db.session.commit()
+        profile = Profile(
+            user_id=user.id
+        )
+        db.session.add(profile)
         db.session.commit()
         flash("Successfully registered!", category="success")
         return redirect(url_for('auth.login'))
