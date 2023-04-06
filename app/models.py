@@ -38,4 +38,5 @@ class Profile(BaseModel):
     last_name = db.Column(db.String)
     linkedIn_url = db.Column(db.String)
     facebook_url = db.Column(db.String)
+    bio = db.Column(db.String)
     user = db.relationship("User", backref="profile", uselist=False)
