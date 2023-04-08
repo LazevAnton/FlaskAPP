@@ -12,6 +12,7 @@ class BaseOpts(SQLAlchemyAutoSchemaOpts):
         * session
         * unknown
     """
+
     def __init__(self, meta, ordered=False):
         if not hasattr(meta, "sqla_session"):
             meta.sqla_session = db.session

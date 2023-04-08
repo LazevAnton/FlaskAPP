@@ -2,8 +2,7 @@ from app.auth import bp
 from flask import render_template, redirect, url_for, flash
 from .forms import LoginForm, RegisterForm
 from flask_login import current_user, login_user, logout_user
-from .. import db
-from ..models import User, Profile
+from ..models import User
 from ..service import UserService
 
 user_service = UserService()
