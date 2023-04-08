@@ -11,11 +11,18 @@ faker = Faker()
 @bp.cli.command("create_fake_users")
 @click.argument('num', type=int)
 def create_fake_users(num):
+    '''
+    one user for test is
+    username = heather12
+    passwd = pGb4bMhN@_
+    '''
     users = []
     for u in range(num):
         username = faker.user_name()
         email = faker.email(domain='gmail.com')
         passwd = faker.password()
+        print(username)
+        print(passwd)
         first_name = faker.first_name()
         last_name = faker.last_name()
         facebook_link = f'https://facebook.com/{first_name}.{last_name}'
