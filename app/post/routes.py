@@ -22,5 +22,3 @@ def create_post():
                 flash('Sorry, title must be at least two characters long', category='error')
         return redirect(url_for('user.blog'))
     return render_template('user/blog.html', form=form, title='Create post')
-
-
