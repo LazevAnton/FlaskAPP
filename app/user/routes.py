@@ -11,9 +11,14 @@ from ..post.forms import PostForm
 @login_required
 def blog():
     form = PostForm()
-    posts = db.session.query(Post).filter(
-        Post.author_id == current_user.user
-    ).order_bt(Post.created_at.desc()).all()
+    posts = (
+        db.session.query(Post)
+        .filter(
+            Post.author_id == current_user.id
+        )
+        .order_by(Post.created_at.desc())
+        .all()
+    )
     return render_template('user/blog.html', posts=posts, form=form)
 
 
