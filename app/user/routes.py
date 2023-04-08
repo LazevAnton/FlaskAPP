@@ -3,7 +3,7 @@ from .forms import ProfileForm
 from app.user import bp
 from flask import render_template, flash, redirect, url_for, request
 from .. import db
-from ..models import User, Post
+from ..models import User, Post, Follow
 from ..post.forms import PostForm
 
 
@@ -43,3 +43,22 @@ def profile(username):
         form.facebook_url.data = user.profile.facebook_url
         form.bio.data = user.profile.bio
     return render_template('user/profile.html', title='Profile', form=form, user=user)
+
+
+@bp.route('follow/<int:user_id>', methods=['POST'])
+@login_required
+def follow(user_id):
+    followee = User.query.get(user_id)
+    form = ProfileForm()
+    if followee is None:
+        flash('Sorry, user not found', category='warning')
+    if current_user.id == followee.id:
+        flash('Yon can not follow your self', category='warning')
+    if current_user.is_following(followee):
+        flash('You already following this user', category='warning')
+
+    follow = Follow(follow_id=current_user.id, followee_id=followee.id)
+    db.session.add(follow)
+    db.session.commit()
+    flash(f'Nice, now you following {followee.username}', category='success')
+    return render_template('user/profile.html', title='Profile', form=form, followee=followee)

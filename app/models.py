@@ -36,6 +36,9 @@ class User(BaseModel, UserMixin):
     def check_password(self, password):
         return check_password_hash(self.password, password)
 
+    def is_following(self, user):
+        return self.following.filter_by(followee_id=user.id).first() is not None
+
     def __repr__(self):
         return f'{self.username}'
 
