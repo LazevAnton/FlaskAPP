@@ -53,6 +53,7 @@ class Profile(BaseModel):
     )
     first_name = db.Column(db.String)
     last_name = db.Column(db.String)
+    last_seen = db.Column(db.DateTime, default=datetime.utcnow)
     linkedIn_url = db.Column(db.String)
     facebook_url = db.Column(db.String)
     bio = db.Column(db.String)
