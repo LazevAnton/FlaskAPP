@@ -18,9 +18,9 @@ class User(BaseModel, UserMixin):
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
     post = db.relationship('Post', backref='author', uselist=True, lazy="dynamic", cascade="all,delete")
-    likes = db.relationship('Like', backref='user', lazy='dynamic', primaryjoin='User.id=Like.user_id',
+    likes = db.relationship('Like', backref='user', lazy='dynamic', primaryjoin='User.id==Like.user_id',
                             cascade='all, delete')
-    dislikes = db.relationship('Dislike', backref='user', lazy='dynamic', primaryjoin='User.id=Dislike.user_id',
+    dislikes = db.relationship('Dislike', backref='user', lazy='dynamic', primaryjoin='User.id==Dislike.user_id',
                                cascade='all, delete')
 
     followers = db.relationship('Follow', backref='followee', foreign_keys='Follow.followee_id')
@@ -83,7 +83,7 @@ class Like(BaseModel):
     )
     post_id = db.Column(
         db.Integer,
-        db.ForeignKey('post.id', name='fk_likes_post_id'),
+        db.ForeignKey('posts.id', name='fk_likes_post_id'),
         nullable=False
     )
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
@@ -99,14 +99,14 @@ class Dislike(BaseModel):
     )
     post_id = db.Column(
         db.Integer,
-        db.ForeignKey('post.id', name='fk_dislikes_post_id'),
+        db.ForeignKey('posts.id', name='fk_dislikes_post_id'),
         nullable=False
     )
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
 
 class Follow(BaseModel):
-    __table_name__ = 'follows'
+    __tablename__ = 'follows'
     follow_id = db.Column(
         db.Integer,
         db.ForeignKey('user.id', name='fk_follows_follow_id'),
