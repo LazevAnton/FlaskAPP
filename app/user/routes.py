@@ -18,7 +18,7 @@ def blog():
     form = PostForm()
     post = db.session.query(Post).filter(
         Post.author_id == current_user.id
-    ).order_by(Post.created_at.desc()).all
+    ).order_by(Post.created_at.desc()).all()
     return render_template('user/blog.html', form=form, post=post)
 
 
