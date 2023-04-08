@@ -4,6 +4,9 @@ from .forms import LoginForm, RegisterForm
 from flask_login import current_user, login_user, logout_user
 from .. import db
 from ..models import User, Profile
+from ..service import UserService
+
+user_service = UserService()
 
 
 @bp.route('/')
@@ -37,15 +40,16 @@ def register():
         if user or email:
             flash('Username or email already exist', category='error')
             return redirect(url_for('auth.register'))
-        user = User(username=form.username.data, email=form.email.data)
-        user.set_password(form.password.data)
-        db.session.add(user)
-        db.session.commit()
-        profile = Profile(
-            user_id=user.id
-        )
-        db.session.add(profile)
-        db.session.commit()
+        user_service.create(username=form.username.data, email=form.email.data, password=form.password.data)
+        # user = User(username=form.username.data, email=form.email.data)
+        # user.set_password(form.password.data)
+        # db.session.add(user)
+        # db.session.commit()
+        # profile = Profile(
+        #     user_id=user.id
+        # )
+        # db.session.add(profile)
+        # db.session.commit()
         flash("Successfully registered!", category="success")
         return redirect(url_for('auth.login'))
     return render_template('auth/register.html', title=register, form=form)
