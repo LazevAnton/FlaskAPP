@@ -7,19 +7,14 @@ from ..models import User, Post
 from ..post.forms import PostForm
 
 
-@bp.route('/index')
-def index():
-    return render_template('user/flaskapp.html', title='FlaskAPP')
-
-
 @bp.route('/blog')
 @login_required
 def blog():
     form = PostForm()
-    post = db.session.query(Post).filter(
-        Post.author_id == current_user.id
-    ).order_by(Post.created_at.desc()).all()
-    return render_template('user/blog.html', form=form, post=post)
+    posts = db.session.query(Post).filter(
+        Post.author_id == current_user.user
+    ).order_bt(Post.created_at.desc()).all()
+    return render_template('user/blog.html', posts=posts, form=form)
 
 
 @bp.route('/profile/<string:username>', methods=['GET', 'POST'])
