@@ -1,5 +1,4 @@
 from os import abort
-
 from flask import request, flash, redirect, url_for, render_template
 from flask_login import login_required, current_user
 from app import db
@@ -31,33 +30,37 @@ def create_post():
 def like(post_id):
     post = Post.query.get_or_404(post_id)
     if Like.query.filter_by(user=current_user, post=post).count() > 0:
-        flash('Sorry, but you have already liked this post', category='warning')
-    post_like = Like(user=current_user, post=post)
-    db.session.add(post_like)
-    db.session.commit()
-    flash('Thank you, you have liked this post')
+        flash('Sorry, but you already like this post😎', category='warning')
+    else:
+        post_like = Like(user=current_user, post=post)
+        db.session.add(post_like)
+        db.session.commit()
+        flash('Thanks, i knew this post get likes🤪', category='success')
     return redirect(request.referrer)
 
 
 @bp.route('/<int:post_id>/dislike', methods=['GET', 'POST'])
-@login_required
 def dislike(post_id):
     post = Post.query.get_or_404(post_id)
-    if Like.query.filter_by(user=current_user, post=post).count() > 0:
-        flash('Sorry, but you have already disliked this post', category='warning')
-    post_dislike = Dislike(user=current_user, post=post)
-    db.session.add(post_dislike)
-    db.session.commit()
-    flash('Thank you, you have disliked this post')
+    if Dislike.query.filter_by(user=current_user, post=post).count() > 0:
+        flash('Sorry, but you already dislike this post😪', category='warning')
+    else:
+        post_dislike = Dislike(user=current_user, post=post)
+        db.session.add(post_dislike)
+        db.session.commit()
+        flash('What?are you seriously?my post is magnificent', category='success')
+
     return redirect(request.referrer)
 
 
 @bp.route('/<int:post_id>/delete', methods=['GET', 'POST'])
+@login_required
 def delete(post_id):
-    post = Post.query.get_or_404(post_id)
-    if post.author != current_user:
+    post_delete = Post.query.get_or_404(post_id)
+    if post_delete.author != current_user:
         abort(403)
-    db.session.delete(post)
-    db.session.commit()
-    flash('You have deleted you post', category='success')
+    else:
+        db.session.delete(post_delete)
+        db.session.commit()
+        flash('Your post has been deleted', category='success')
     return redirect(url_for('user.blog'))
