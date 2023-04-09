@@ -45,20 +45,21 @@ def profile(username):
     return render_template('user/profile.html', title='Profile', form=form, user=user)
 
 
-@bp.route('follow/<int:user_id>', methods=['POST'])
+@bp.route('/follow/<int:user_id>', methods=['POST'])
 @login_required
-def follow(user_id):
-    followee = User.query.get(user_id)
-    form = ProfileForm()
-    if followee is None:
-        flash('Sorry, user not found', category='warning')
-    if current_user.id == followee.id:
-        flash('Yon can not follow your self', category='warning')
-    if current_user.is_following(followee):
-        flash('You already following this user', category='warning')
+def follow_user(user_id):
+    user_to_follow = db.session.query(User).filter(User.username == user_id).first_or_404()
+    if not user_to_follow:
+        flash('User not found.', category='error')
+        return redirect(url_for('user.profile', username=user_to_follow.username))
 
-    follow = Follow(follow_id=current_user.id, followee_id=followee.id)
+    if current_user.is_following(user_to_follow):
+        flash('You are already following this user.', 'info')
+        return redirect(url_for('user_profile', username=user_to_follow.username))
+
+    follow = Follow(follow=current_user, followee=user_to_follow)
     db.session.add(follow)
     db.session.commit()
-    flash(f'Nice, now you following {followee.username}', category='success')
-    return render_template('user/profile.html', title='Profile', form=form, followee=followee)
+
+    flash(f'You are now following {user_to_follow.username}.', 'success')
+    return redirect(url_for('user_profile', username=user_to_follow.username))
