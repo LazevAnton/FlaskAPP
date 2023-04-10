@@ -25,6 +25,8 @@ def create_app():
     app.register_blueprint(user_bp)
     from .post import bp as post_bp
     app.register_blueprint(post_bp)
+    from .api import bp as api_bp
+    app.register_blueprint(api_bp)
     login_manager.init_app(app)
 
     @login_manager.user_loader
