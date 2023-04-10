@@ -36,8 +36,18 @@ class User(BaseModel, UserMixin):
     def check_password(self, password):
         return check_password_hash(self.password, password)
 
+    def follow_user(self, user):
+        if not self.is_following(user):
+            follow = Follow(follow=self, followee=user)
+            db.session.add(follow)
+
+    def unfollow_user(self, user):
+        follow = self.following.filter_by(followee=user).first()
+        if follow:
+            db.session.delete(follow)
+
     def is_following(self, user):
-        return self.following.filter(followee_id=user.id).first() is not None
+        return self.following.filter_by(followee=user).count() > 0
 
     def __repr__(self):
         return f'{self.username}'
