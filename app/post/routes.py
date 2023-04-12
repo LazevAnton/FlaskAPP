@@ -29,10 +29,17 @@ def create_post():
 @login_required
 def like(post_id):
     post = Post.query.get_or_404(post_id)
+    post_dislike = Dislike.query.filter_by(user=current_user, post=post).first()
+    post_like = Like(user=current_user, post=post)
     if Like.query.filter_by(user=current_user, post=post).count() > 0:
         flash('Sorry, but you already like this post😎', category='warning')
+    elif post_dislike:
+        db.session.delete(post_dislike)
+        db.session.commit()
+        db.session.add(post_like)
+        db.session.commit()
+        flash('Thanks, i knew this post get likes🤪', category='success')
     else:
-        post_like = Like(user=current_user, post=post)
         db.session.add(post_like)
         db.session.commit()
         flash('Thanks, i knew this post get likes🤪', category='success')
@@ -42,10 +49,17 @@ def like(post_id):
 @bp.route('/<int:post_id>/dislike', methods=['GET', 'POST'])
 def dislike(post_id):
     post = Post.query.get_or_404(post_id)
+    post_like = Like.query.filter_by(user=current_user, post=post).first()
+    post_dislike = Dislike(user=current_user, post=post)
     if Dislike.query.filter_by(user=current_user, post=post).count() > 0:
         flash('Sorry, but you already dislike this post😪', category='warning')
+    elif post_like:
+        db.session.delete(post_like)
+        db.session.commit()
+        db.session.add(post_dislike)
+        db.session.commit()
+        flash('What?are you seriously?my post is magnificent', category='success')
     else:
-        post_dislike = Dislike(user=current_user, post=post)
         db.session.add(post_dislike)
         db.session.commit()
         flash('What?are you seriously?my post is magnificent', category='success')
