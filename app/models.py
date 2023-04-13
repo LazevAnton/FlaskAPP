@@ -1,6 +1,5 @@
 from datetime import datetime
 from hashlib import md5
-
 from app import db
 from flask_login import UserMixin
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -23,8 +22,8 @@ class User(BaseModel, UserMixin):
     dislikes = db.relationship('Dislike', backref='user', lazy='dynamic', primaryjoin='User.id==Dislike.user_id',
                                cascade='all, delete')
 
-    followers = db.relationship('Follow', backref='followee', foreign_keys='Follow.followee_id')
-    following = db.relationship('Follow', backref='follow', foreign_keys='Follow.follow_id')
+    followers = db.relationship('Follow', backref='followee', foreign_keys='Follow.followee_id', lazy='dynamic')
+    following = db.relationship('Follow', backref='follow', foreign_keys='Follow.follow_id', lazy='dynamic')
 
     def avatar(self, size):
         avatar_hash = md5(self.email.lower().encode('utf-8')).hexdigest()
@@ -36,18 +35,21 @@ class User(BaseModel, UserMixin):
     def check_password(self, password):
         return check_password_hash(self.password, password)
 
-    def follow_user(self, user):
+    def follow(self, user):
         if not self.is_following(user):
-            follow = Follow(follow=self, followee=user)
+            follow = Follow(follow_id=self.id, followee_id=user.id)
             db.session.add(follow)
+            db.session.commit()
 
-    def unfollow_user(self, user):
-        follow = self.following.filter_by(followee=user).first()
+    def unfollow(self, user):
+        follow = Follow.query.filter_by(follow_id=self.id, followee_id=user.id).first()
         if follow:
             db.session.delete(follow)
+            db.session.commit()
 
     def is_following(self, user):
-        return self.following.filter_by(followee=user).count() > 0
+        follow = Follow.query.filter_by(follow_id=self.id, followee_id=user.id).first()
+        return follow is not None
 
     def __repr__(self):
         return f'{self.username}'
@@ -124,10 +126,15 @@ class Follow(BaseModel):
     follow_id = db.Column(
         db.Integer,
         db.ForeignKey('user.id', name='fk_follows_follow_id'),
-        primary_key=True
+        primary_key=True,
+        nullable=False,
+        autoincrement=False
     )
     followee_id = db.Column(
         db.Integer,
-        db.ForeignKey('user.id', name='fk_follows_followee_id')
+        db.ForeignKey('user.id', name='fk_follows_followee_id'),
+        primary_key=True,
+        nullable=False,
+        autoincrement=False
     )
     created_at = db.Column(db.DateTime, default=datetime.utcnow)

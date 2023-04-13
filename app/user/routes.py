@@ -3,7 +3,7 @@ from .forms import ProfileForm
 from app.user import bp
 from flask import render_template, flash, redirect, url_for, request
 from .. import db
-from ..models import User, Post, Follow
+from ..models import User, Post
 from ..post.forms import PostForm
 
 
@@ -45,21 +45,59 @@ def profile(username):
     return render_template('user/profile.html', title='Profile', form=form, user=user)
 
 
+# @bp.route('/follow/<int:user_id>', methods=['POST'])
+# @login_required
+# def follow(user_id):
+#     user = User.query.get(user_id)
+#     if not user:
+#         flash('Something is wrong', category='error')
+#         return redirect(url_for('user.profile', username=user.username))
+#     elif current_user.is_following(user):
+#         flash('You already following this user', category='warning')
+#         return redirect(url_for('user.profile', username=user.username))
+#     else:
+#         current_user.follow(user)
+#         flash(f'You are now following {user.username}.', 'success')
+#     return redirect(url_for('user.profile', username=user.username))
+#
+#
+#
+#
+# @bp.route('/unfollow/<int:user_id>', methods=['POST'])
+# @login_required
+# def unfollow(user_id):
+#     user = User.query.get_by(user_id)
+#     if not user:
+#         flash('Something is wrong', category='error')
+#         return redirect(url_for('user.profile', username=user.username))
+#     else:
+#         current_user.unfollow(user)
+#         flash('So sad😪', category='success')
+#     return redirect(url_for('user.profile', username=user.username))
 @bp.route('/follow/<int:user_id>', methods=['POST'])
 @login_required
 def follow_user(user_id):
-    user_to_follow = db.session.query(User).filter(User.username == user_id).first_or_404()
-    if not user_to_follow:
-        flash('User not found.', category='error')
-        return redirect(url_for('user.profile', username=user_to_follow.username))
+    user = User.query.get(user_id)
+    if not user:
+        flash('Something went wrong', category='error')
+        return redirect(url_for('user.profile', username=user.username))
+    elif current_user.is_following(user):
+        flash('You are already following this user', category='warning')
+        return redirect(url_for('user.profile', username=user.username))
+    else:
+        current_user.follow(user)
+        flash(f'You are now following {user.username}.', 'success')
+    return redirect(url_for('user.profile', username=user.username))
 
-    if current_user.is_following(user_to_follow):
-        flash('You are already following this user.', 'info')
-        return redirect(url_for('user_profile', username=user_to_follow.username))
 
-    follow = Follow(follow=current_user, followee=user_to_follow)
-    db.session.add(follow)
-    db.session.commit()
-
-    flash(f'You are now following {user_to_follow.username}.', 'success')
-    return redirect(url_for('user_profile', username=user_to_follow.username))
+@bp.route('/unfollow/<int:user_id>', methods=['POST'])
+@login_required
+def unfollow_user(user_id):
+    user = User.query.get(user_id)
+    if not user:
+        flash('Something went wrong', category='error')
+        return redirect(url_for('user.profile', username=user.username))
+    else:
+        current_user.unfollow(user)
+        flash('Unfollowed successfully', category='success')
+    return redirect(url_for('user.profile', username=user.username))

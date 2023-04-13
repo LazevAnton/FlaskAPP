@@ -8,4 +8,4 @@ from app import db
 class UsersResource(Resource):
     def get(self):
         users = db.session.query(User).all()
-        return jsonify(UserSchema(exclude=('password','id',)).dump(users, many=True))
+        return jsonify(UserSchema(exclude=('password', 'id',)).dump(users, many=True))
