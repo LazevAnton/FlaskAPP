@@ -26,8 +26,6 @@ def blog():
 @login_required
 def profile(username):
     user = db.session.query(User).filter(User.username == username).first_or_404()
-    followers = user.all_followers()
-    following = user.all_following()
     form = ProfileForm()
     if form.validate_on_submit():
         user.profile.first_name = form.first_name.data
@@ -44,15 +42,18 @@ def profile(username):
         form.linkedin_url.data = user.profile.linkedIn_url
         form.facebook_url.data = user.profile.facebook_url
         form.bio.data = user.profile.bio
-    return render_template('user/profile.html', title='Profile', form=form, user=user,
-                           followers=followers, following=following)
+    return render_template('user/profile.html', title='Profile', form=form, user=user)
 
 
 @bp.route('/user/<username>/follow', methods=['POST'])
 @login_required
 def follow_user(username):
     user = User.query.filter_by(username=username).first_or_404()
-    if user != current_user:
+    if current_user.is_following(user):
+        flash(f'You have already following {username}', category='warning')
+    elif user is None:
+        flash(f'Something went wrong, {username} not found', category='error')
+    elif user != current_user:
         current_user.follow(user)
         flash(f'You are now following {username}.', 'success')
     else:
