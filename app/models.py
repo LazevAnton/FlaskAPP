@@ -1,5 +1,8 @@
 from datetime import datetime
 from hashlib import md5
+
+from sqlalchemy.orm import joinedload
+
 from app import db
 from flask_login import UserMixin
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -76,13 +79,27 @@ class User(BaseModel, UserMixin):
             db.session.delete(follow)
             db.session.commit()
 
-    def all_followers(self):
-        followers = User.query.join(Follow, Follow.follower_id == User.id).all()
-        return followers
+    def get_followers(self):
+        """
+        Get all followers of the current user.
+        """
+        following = User.query.join(
+            Follow, Follow.followee_id == User.id
+        ).filter(
+            Follow.follower_id == self.id
+        ).options(joinedload(User.followers)).all()
+        return following
 
-    def all_following(self):
-        followee = User.query.join(Follow, Follow.followee_id == User.id).all()
-        return followee
+    def get_following(self):
+        """
+        Get all users followed by the current user.
+        """
+        followers = User.query.join(
+            Follow, Follow.follower_id == User.id
+        ).filter(
+            Follow.followee_id == self.id
+        ).options(joinedload(User.followers)).all()
+        return followers
 
     def __repr__(self):
         return f"{self.username}"
