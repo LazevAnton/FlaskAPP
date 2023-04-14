@@ -54,7 +54,7 @@ def follow_user(username):
     user = User.query.filter_by(username=username).first_or_404()
     if user != current_user:
         current_user.follow(user)
-        flash(f'You are now following {user.username}.', 'success')
+        flash(f'You are now following {username}.', 'success')
     else:
         flash('You cannot follow yourself.', 'danger')
     return redirect(url_for('user.profile', username=user.username))
@@ -66,7 +66,7 @@ def unfollow_user(username):
     user = User.query.filter_by(username=username).first_or_404()
     if user != current_user:
         current_user.unfollow(user)
-        flash(f'You have unfollowed {user.username}.', 'success')
+        flash(f'You have unfollowed {username}.', 'success')
     else:
         flash('You cannot unfollow yourself.', 'danger')
     return redirect(url_for('user.profile', username=user.username))
