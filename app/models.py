@@ -7,134 +7,167 @@ from werkzeug.security import generate_password_hash, check_password_hash
 
 class BaseModel(db.Model):
     __abstract__ = True
+
     id = db.Column(db.Integer, primary_key=True)
 
 
 class User(BaseModel, UserMixin):
+    __tablename__ = "user"
+
     username = db.Column(db.String, unique=True, index=True)
     email = db.Column(db.String, unique=True, index=True)
     password = db.Column(db.String, nullable=False)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    avatar = db.Column(db.String(120), unique=True, nullable=True)
 
-    post = db.relationship('Post', backref='author', uselist=True, lazy="dynamic", cascade="all,delete")
-    likes = db.relationship('Like', backref='user', lazy='dynamic', primaryjoin='User.id==Like.user_id',
-                            cascade='all, delete')
-    dislikes = db.relationship('Dislike', backref='user', lazy='dynamic', primaryjoin='User.id==Dislike.user_id',
-                               cascade='all, delete')
+    posts = db.relationship(
+        "Post", backref="author", uselist=True, lazy="dynamic", cascade="all,delete"
+    )
+    likes = db.relationship(
+        'Like', backref='user', lazy='dynamic', primaryjoin='User.id==Like.user_id', cascade="all,delete"
+    )
+    dislikes = db.relationship(
+        'Dislike', backref='user', lazy='dynamic', primaryjoin='User.id==Dislike.user_id', cascade="all,delete"
+    )
 
-    followers = db.relationship('Follow', backref='followee', foreign_keys='Follow.followee_id', lazy='dynamic')
-    following = db.relationship('Follow', backref='follow', foreign_keys='Follow.follow_id', lazy='dynamic')
+    # list of users that follow you
+    followers = db.relationship("Follow", backref="followee", foreign_keys="Follow.followee_id")
+
+    # list of users that you follow
+    following = db.relationship("Follow", backref="follower", foreign_keys="Follow.follower_id")
 
     def avatar(self, size):
         avatar_hash = md5(self.email.lower().encode('utf-8')).hexdigest()
         return f'https://www.gravatar.com/avatar/{avatar_hash}?d=identicon&s={size}'
 
     def set_password(self, password):
+        """
+        Set user password hash
+        """
         self.password = generate_password_hash(password)
 
     def check_password(self, password):
+        """
+        Check user password hash with existing in db
+        """
         return check_password_hash(self.password, password)
 
+    def is_following(self, user):
+        """
+        Check if the current user is following the given user.
+        """
+        return Follow.query.filter_by(follower_id=self.id, followee_id=user.id).first() is not None
+
     def follow(self, user):
+        """
+        Follow the given user.
+        """
         if not self.is_following(user):
-            follow = Follow(follow_id=self.id, followee_id=user.id)
+            follow = Follow(follower_id=self.id, followee_id=user.id)
             db.session.add(follow)
             db.session.commit()
 
     def unfollow(self, user):
-        follow = Follow.query.filter_by(follow_id=self.id, followee_id=user.id).first()
+        """
+        Unfollow the given user.
+        """
+        follow = Follow.query.filter_by(follower_id=self.id, followee_id=user.id).first()
         if follow:
             db.session.delete(follow)
             db.session.commit()
 
-    def is_following(self, user):
-        follow = Follow.query.filter_by(follow_id=self.id, followee_id=user.id).first()
-        return follow is not None
+    def all_followers(self):
+        followers = User.query.join(Follow, Follow.follower_id == User.id).all()
+        return followers
+
+    def all_following(self):
+        followee = User.query.join(Follow, Follow.followee_id == User.id).all()
+        return followee
 
     def __repr__(self):
-        return f'{self.username}'
+        return f"{self.username}"
 
 
 class Profile(BaseModel):
-    __tablename__ = 'profiles'
+    __tablename__ = "profiles"
     __table_args__ = (
         db.Index("idx_profiles_user_id", "user_id"),
     )
 
     user_id = db.Column(
         db.Integer,
-        db.ForeignKey('user.id', name='fk_profiles_user_id'),
+        db.ForeignKey("user.id", name="fk_profiles_user_id", ondelete="CASCADE"),
         nullable=False
     )
     first_name = db.Column(db.String)
     last_name = db.Column(db.String)
-    last_seen = db.Column(db.DateTime, default=datetime.utcnow)
-    linkedIn_url = db.Column(db.String)
-    facebook_url = db.Column(db.String)
     bio = db.Column(db.String)
+    last_seen = db.Column(db.DateTime, default=datetime.utcnow)
+    facebook_url = db.Column(db.String)
+    linkedIn_url = db.Column(db.String)
+
     user = db.relationship("User", backref=db.backref("profile", uselist=False), uselist=False)
 
 
 class Post(BaseModel):
     __tablename__ = 'posts'
+
     title = db.Column(db.String, nullable=False)
     content = db.Column(db.String, nullable=False)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     author_id = db.Column(
         db.Integer,
-        db.ForeignKey('user.id', name='fk_posts_author_id', ondelete='CASCADE'),
+        db.ForeignKey("user.id", name="fk_posts_author_id", ondelete="CASCADE"),
         nullable=False
     )
-    likes = db.relationship('Like', backref='post', uselist=True, cascade='all, delete')
-    dislikes = db.relationship('Dislike', backref='post', uselist=True, cascade='all, delete')
+
+    likes = db.relationship("Like", backref="post", uselist=True, cascade="all,delete")
+    dislikes = db.relationship("Dislike", backref="post", uselist=True, cascade="all,delete")
 
 
+# Like model
 class Like(BaseModel):
-    __tablename__ = 'likes'
+    __tablename__ = "likes"
 
     user_id = db.Column(
         db.Integer,
-        db.ForeignKey('user.id', name='fk_likes_user_id'),
+        db.ForeignKey('user.id', name="fk_likes_user_id"),
         nullable=False
     )
     post_id = db.Column(
         db.Integer,
-        db.ForeignKey('posts.id', name='fk_likes_post_id'),
+        db.ForeignKey('posts.id', name="fk_likes_post_id"),
         nullable=False
     )
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
 
 class Dislike(BaseModel):
-    __tablename__ = 'dislikes'
-
+    __tablename__ = "dislikes"
     user_id = db.Column(
         db.Integer,
-        db.ForeignKey('user.id', name='fk_dislikes_user_id'),
+        db.ForeignKey('user.id', name="fk_dislikes_user_id"),
         nullable=False
     )
     post_id = db.Column(
         db.Integer,
-        db.ForeignKey('posts.id', name='fk_dislikes_post_id'),
+        db.ForeignKey('posts.id', name="fk_dislikes_post_id"),
         nullable=False
     )
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
 
-class Follow(BaseModel):
+class Follow(db.Model):
     __tablename__ = 'follows'
-    follow_id = db.Column(
+
+    follower_id = db.Column(
         db.Integer,
-        db.ForeignKey('user.id', name='fk_follows_follow_id'),
-        primary_key=True,
-        nullable=False,
-        autoincrement=False
+        db.ForeignKey('user.id', name="fk_follows_follower_id"),
+        primary_key=True
     )
     followee_id = db.Column(
         db.Integer,
-        db.ForeignKey('user.id', name='fk_follows_followee_id'),
-        primary_key=True,
-        nullable=False,
-        autoincrement=False
+        db.ForeignKey('user.id', name="fk_follows_followee_id"),
+        primary_key=True
     )
     created_at = db.Column(db.DateTime, default=datetime.utcnow)

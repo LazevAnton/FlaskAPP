@@ -13,8 +13,8 @@ faker = Faker()
 def create_fake_users(num):
     '''
     one user for test is
-    username = heather12
-    passwd = pGb4bMhN@_
+    username = ronald67
+    passwd = O0#zCQsl@8
     '''
     users = []
     for u in range(num):
