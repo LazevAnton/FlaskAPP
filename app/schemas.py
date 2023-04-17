@@ -45,7 +45,6 @@ class ProfileSchema(BaseSchema):
 class UserSchema(BaseSchema):
     class Meta:
         model = User
-        exclude = ('password',)
 
     profile = Nested(ProfileSchema(), many=False)
 
