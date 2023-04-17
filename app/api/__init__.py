@@ -8,4 +8,3 @@ api = Api(bp)
 
 api.add_resource(UsersResource, '/users', endpoint='users_list')
 api.add_resource(PostUserResource, '/users/<int:user_id>/posts', endpoint='user_posts')
-from . import routes  # noqa
