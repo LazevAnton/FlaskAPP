@@ -5,5 +5,5 @@ from wtforms.validators import DataRequired, Length
 
 class PostForm(FlaskForm):
     post_title = StringField('Title', validators=[DataRequired(), Length(min=2, max=200)])
-    post_content = TextAreaField('Content', validators=[DataRequired(), Length(min=1, max=500)])
+    post_content = TextAreaField('Content', validators=[DataRequired(), Length(min=1, max=5000)])
     submit = SubmitField('Create Post')
