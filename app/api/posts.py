@@ -1,28 +1,27 @@
 from flask_restful import Resource
 from app import db
 from app.models import Post
-from flask import jsonify
-
+from flask import jsonify, request
 from app.schemas import PostSchema
+from app.service import PostService
+
+post_service = PostService()
 
 
-class PostUserResource(Resource):
-    def get(self, user_id):
-        user_post = db.session.query(Post).filter(Post.author_id == user_id).all()
-        return jsonify(PostSchema().dump(user_post, many=True))
-    # def get(self):
-    #     posts = db.session.query(Post, User.username).join(User).all()
-    #     post_list = []
-    #     for post, username in posts:
-    #         post_dict = {
-    #             'author': username,
-    #             'title': post.title,
-    #             'content': post.content,
-    #             'created_at': post.created_at.isoformat(),
-    #             'likes': post.dislikes,
-    #             'dislike': post.likes
-    #
-    #
-    #         }
-    #         post_list.append(post_dict)
-    #     return jsonify(post_list)
+class PostsResource(Resource):
+    def get(self):
+        posts = db.session.query(Post).all()
+        return jsonify(PostSchema().dump(posts, many=True))
+
+    #     user_post = db.session.query(Post).filter(Post.author_id == user_id).all()
+    #     return jsonify(PostSchema().dump(user_post, many=True))
+    def post(self):
+        json_data = request.get_json()
+        post = post_service.create(**json_data)
+        return jsonify(PostSchema().dump(post, many=False))
+
+
+class PostResource(Resource):
+    def get(self, post_id):
+        post = post_service.get_by_id(post_id)
+        return jsonify(PostSchema().dump(post, many=False))
