@@ -32,6 +32,16 @@ class BaseSchema(SQLAlchemyAutoSchema):
     OPTIONS_CLASS = BaseOpts
 
 
+class LikeSchema(BaseSchema):
+    class Meta:
+        model = Like
+
+
+class DisLikeSchema(BaseSchema):
+    class Meta:
+        model = Dislike
+
+
 class PostSchema(BaseSchema):
     class Meta:
         model = Post
@@ -47,13 +57,3 @@ class UserSchema(BaseSchema):
         model = User
 
     profile = Nested(ProfileSchema(), many=False)
-
-
-class LikeSchema(BaseSchema):
-    class Meta:
-        model = Like
-
-
-class DisLikeSchema(BaseSchema):
-    class Meta:
-        model = Dislike
