@@ -13,7 +13,7 @@ class LoginForm(FlaskForm):
     username = StringField('Username', validators=[validators.DataRequired(message='Username is required')])
     password = PasswordField('Password', validators=[validators.DataRequired(message='Password is required'),
                                                      validators.Length(min=8,
-                                                                       message='Min 6 length of password is required')])
+                                                                       message='Min 8 length of password is required')])
 
     remember = BooleanField('Remember')
     submit = SubmitField('Login')
