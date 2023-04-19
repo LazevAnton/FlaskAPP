@@ -8,7 +8,7 @@ from app.models import Post
 @bp.route('/')
 @bp.route('/index')
 def index():
-    posts = db.session.query(Post).order_by(Post.created_at).all()
+    posts = db.session.query(Post).order_by(Post.created_at.desc()).all()
     return render_template('index.html', title='MainPage', posts=posts)
 
 
