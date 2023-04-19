@@ -1,6 +1,6 @@
 from app import db
 from app.models import User, Profile, Post
-from app.schemas import UserSchema
+from app.schemas import UserSchema, PostSchema
 
 
 class UserService:
@@ -59,3 +59,15 @@ class PostService:
         db.session.add(post)
         db.session.commit()
         return post
+
+    def update(self,post_data):
+        post_update = PostSchema().load(post_data)
+        db.session.add(post_update)
+        db.session.commit()
+        return post_update
+
+    def delete(self, post_id):
+        post = self.get_by_id(post_id)
+        db.session.delete(post)
+        db.session.commit()
+        return f'Your post has been deleted'
