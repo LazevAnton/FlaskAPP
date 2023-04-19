@@ -25,3 +25,13 @@ class PostResource(Resource):
     def get(self, post_id):
         post = post_service.get_by_id(post_id)
         return jsonify(PostSchema().dump(post, many=False))
+
+    def put(self, post_id):
+        json_data = request.get_json()
+        json_data['id'] = post_id
+        post = post_service.update(json_data)
+        return jsonify(PostSchema().dump(post, many=False))
+
+    def delete(self, post_id):
+        post = post_service.delete(post_id)
+        return jsonify(PostSchema().dump(post, many=False))
