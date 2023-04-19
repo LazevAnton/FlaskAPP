@@ -1,5 +1,7 @@
+from sqlalchemy import func
+
 from app import db
-from app.models import User, Profile, Post
+from app.models import User, Profile, Post, Like, Dislike
 from app.schemas import UserSchema, PostSchema
 
 
@@ -54,13 +56,21 @@ class PostService:
         post = db.session.query(Post).filter(Post.id == post_id).first_or_404()
         return post
 
+    def get_likes(self, post_id):
+        likes = db.session.query(Like).filter(Like.post_id == post_id)
+        return likes.count()
+
+    def get_dislikes(self, post_id):
+        dislikes = db.session.query(Dislike).filter(Dislike.post_id == post_id)
+        return dislikes.count()
+
     def create(self, **kwargs):
         post = Post(title=kwargs.get('title'), content=kwargs.get('content'), author_id=kwargs.get('user_id'))
         db.session.add(post)
         db.session.commit()
         return post
 
-    def update(self,post_data):
+    def update(self, post_data):
         post_update = PostSchema().load(post_data)
         db.session.add(post_update)
         db.session.commit()
