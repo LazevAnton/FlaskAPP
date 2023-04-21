@@ -1,8 +1,6 @@
-from sqlalchemy import func
-
 from app import db
 from app.models import User, Profile, Post, Like, Dislike
-from app.schemas import UserSchema, PostSchema
+from app.schemas import UserSchema, PostSchema, LikeSchema
 
 
 class UserService:
@@ -10,6 +8,18 @@ class UserService:
     def get_by_id(self, user_id):
         user = db.session.query(User).filter(User.id == user_id).first_or_404()
         return user
+
+    def get_all_user_posts(self, user_id):
+        posts = db.session.query(Post).filter(Post.author_id == user_id).all()
+        user_posts = []
+        for post in posts:
+            user_posts.append({
+                'id': post.id,
+                'title': post.title,
+                'content': post.content,
+                'created_at': post.created_at
+            })
+        return user_posts
 
     def get_by_username(self, username):
         user = db.session.query(User).filter(User.username == username).first_or_404()
@@ -57,12 +67,12 @@ class PostService:
         return post
 
     def get_likes(self, post_id):
-        likes = db.session.query(Like).filter(Like.post_id == post_id)
-        return likes.count()
+        likes = db.session.query(Like).filter(Like.post_id == post_id).count()
+        return likes
 
     def get_dislikes(self, post_id):
-        dislikes = db.session.query(Dislike).filter(Dislike.post_id == post_id)
-        return dislikes.count()
+        dislikes = db.session.query(Dislike).filter(Dislike.post_id == post_id).count()
+        return dislikes
 
     def create(self, **kwargs):
         post = Post(title=kwargs.get('title'), content=kwargs.get('content'), author_id=kwargs.get('user_id'))
@@ -70,9 +80,18 @@ class PostService:
         db.session.commit()
         return post
 
+    def create_post_by_user_id(self, user_id, **kwargs):
+        post = Post(title=kwargs.get('title'), content=kwargs.get('content'), author_id=user_id)
+        db.session.add(post)
+        db.session.commit()
+        return post
+
+    def get_spec_post_by_spec_user(self, user_id, post_id):
+        post = db.session.query(Post).filter(Post.id == post_id, Post.author_id == user_id).first()
+        return post
+
     def update(self, post_data):
         post_update = PostSchema().load(post_data)
-        db.session.add(post_update)
         db.session.commit()
         return post_update
 
@@ -80,4 +99,23 @@ class PostService:
         post = self.get_by_id(post_id)
         db.session.delete(post)
         db.session.commit()
-        return f'Your post has been deleted'
+        return True
+
+    def delete_post_id_by_user_id(self, user_id, post_id):
+        post = Post.query.filter(Post.id == post_id, Post.author_id == user_id).first_or_404()
+        db.session.delete(post)
+        db.session.commit()
+        return post
+
+
+class LikeService:
+    def get_by_post_id(self, post_id):
+        likes = db.session.query(Like).filter(Like.post_id == post_id)
+        return likes.count()
+
+    def create(self, post_id):
+        pass
+
+    # def get_dislikes_by_post_id(self, post_id):
+    #     dislikes = db.session.query(Dislike).filter(Dislike.post_id == post_id)
+    #     return dislikes.count()

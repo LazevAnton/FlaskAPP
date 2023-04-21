@@ -26,7 +26,7 @@ class PostResource(Resource):
         post = post_service.get_by_id(post_id)
         likes = post_service.get_likes(post_id)
         dislikes = post_service.get_dislikes(post_id)
-        post_data = PostSchema().dump(post,many=False)
+        post_data = PostSchema().dump(post, many=False)
         post_data['likes'] = likes
         post_data['dislikes'] = dislikes
         return jsonify(post_data)
