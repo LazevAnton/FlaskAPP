@@ -37,10 +37,6 @@ class UserResource(Resource):
 
 
 class UsersPostResource(Resource):
-    def get(self, user_id):
-        user_posts = user_service.get_all_user_posts(user_id)
-        return jsonify(user_posts)
-
     def post(self, user_id):
         json_data = request.get_json()
         user_post = post_service.create_post_by_user_id(user_id, **json_data)
@@ -65,4 +61,3 @@ class UsersPostResource(Resource):
     def delete(self, user_id, post_id):
         data = post_service.delete_post_id_by_user_id(user_id, post_id)
         return jsonify(UserSchema().dump(data, many=False))
-
