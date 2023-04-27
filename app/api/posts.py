@@ -10,11 +10,13 @@ post_service = PostService()
 
 class PostsResource(Resource):
     def get(self):
-        posts = db.session.query(Post).all()
+        author_id = request.args.get('author_id', type=int)
+        if author_id:
+            posts = db.session.query(Post).filter(Post.author_id == author_id).all()
+        else:
+            posts = db.session.query(Post).all()
         return jsonify(PostSchema().dump(posts, many=True))
 
-    #     user_post = db.session.query(Post).filter(Post.author_id == user_id).all()
-    #     return jsonify(PostSchema().dump(user_post, many=True))
     def post(self):
         json_data = request.get_json()
         post = post_service.create(**json_data)
