@@ -1,6 +1,7 @@
 from flask import Blueprint
 from flask_restful import Api
 from .like import LikesResource, LikeResource
+from .profile import ProfileResource
 from .users import UsersResource, UserResource, UsersPostResource
 from .posts import PostsResource, PostResource
 
@@ -9,6 +10,7 @@ api = Api(bp)
 
 api.add_resource(UsersResource, '/users', endpoint='users_list')
 api.add_resource(UserResource, '/users/<int:user_id>', endpoint='user_details')
+api.add_resource(ProfileResource, '/profile/<int:user_id>', endpoint='profile_user')
 api.add_resource(UsersPostResource, '/users/<int:user_id>/posts', endpoint='user_post_list')
 api.add_resource(UsersPostResource, '/users/<int:user_id>/posts', endpoint='crete_post_user_id')
 api.add_resource(UsersPostResource, '/users/<int:user_id>/posts/<int:post_id>', endpoint='user_post_by_post_id')
