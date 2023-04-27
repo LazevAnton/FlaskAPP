@@ -1,6 +1,6 @@
 from app import db
 from app.models import User, Profile, Post, Like, Dislike
-from app.schemas import UserSchema, PostSchema, LikeSchema
+from app.schemas import UserSchema, PostSchema, LikeSchema, ProfileSchema
 
 
 class UserService:
@@ -92,7 +92,7 @@ class PostService:
 
     def update(self, post_data):
         post_update = PostSchema().load(post_data)
-        db.session.commit()
+        db.session.add(post_update)
         return post_update
 
     def delete(self, post_id):
@@ -106,6 +106,13 @@ class PostService:
         db.session.delete(post)
         db.session.commit()
         return post
+
+
+class ProfileService:
+    def update(self, profile_data):
+        profile = ProfileSchema().load(profile_data)
+        db.session.commit()
+        return profile
 
 
 class LikeService:
