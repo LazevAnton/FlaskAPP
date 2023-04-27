@@ -29,7 +29,7 @@ class LikesResource(Resource):
 
 class LikeResource(Resource):
     def get(self, like_id):
-        like = db.session.query(Like).filter(Like.id==like_id).first()
+        like = db.session.query(Like).filter(Like.id == like_id).first()
         return jsonify(LikeSchema().dump(like, many=False))
 
 # class LikeResource(Resource):
