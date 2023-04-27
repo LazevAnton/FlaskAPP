@@ -1,6 +1,6 @@
 from app import db
 from app.models import User, Profile, Post, Like, Dislike
-from app.schemas import UserSchema, PostSchema, LikeSchema, ProfileSchema
+from app.schemas import UserSchema, PostSchema, LikeSchema, ProfileSchema, DisLikeSchema
 
 
 class UserService:
@@ -120,9 +120,24 @@ class LikeService:
         likes = db.session.query(Like).filter(Like.post_id == post_id)
         return likes.count()
 
-    def create(self, post_id):
-        pass
+    def check_like_post_by_user(self, post_id, user_id):
+        like = db.session.query(Like).filter(Like.post_id == post_id, Like.user_id == user_id).first()
+        return like
 
-    # def get_dislikes_by_post_id(self, post_id):
-    #     dislikes = db.session.query(Dislike).filter(Dislike.post_id == post_id)
-    #     return dislikes.count()
+    def create(self, data):
+        like = LikeSchema().load(data)
+        db.session.add(like)
+        db.session.commit()
+        return like
+
+
+class DislikeService:
+    def check_dislike_post_by_user(self, post_id, user_id):
+        dislike = db.session.query(Dislike).filter(Dislike.post_id == post_id, Dislike.user_id == user_id).first()
+        return dislike
+
+    def create(self, data):
+        dislike = DisLikeSchema().load(data)
+        db.session.add(dislike)
+        db.session.commit()
+        return dislike

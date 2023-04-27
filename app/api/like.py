@@ -14,13 +14,27 @@ class LikesResource(Resource):
         return jsonify(LikeSchema().dump(likes, many=True))
 
     def post(self):
-        pass
+        json_data = request.get_json()
+        post_id = json_data['post_id']
+        user_id = json_data['user_id']
+        like = like_service.check_like_post_by_user(post_id, user_id)
+        if like:
+            response = jsonify(error='You already like this post')
+            response.status_code = 400
+            return response
+        else:
+            new_like = like_service.create(json_data)
+            return jsonify(LikeSchema().dump(new_like, many=False))
 
 
 class LikeResource(Resource):
-    def get(self, post_id):
-        like = like_service.get_by_post_id(post_id)
-        post_data = LikeSchema().dump(like, many=False)
-        post_data['likes:'] = like
-        return jsonify(post_data)
+    def get(self, like_id):
+        like = db.session.query(Like).filter(Like.id==like_id).first()
+        return jsonify(LikeSchema().dump(like, many=False))
 
+# class LikeResource(Resource):
+#     def get(self, post_id):
+#         like = like_service.get_by_post_id(post_id)
+#         post_data = LikeSchema().dump(like, many=False)
+#         post_data['likes:'] = like
+#         return jsonify(post_data)
