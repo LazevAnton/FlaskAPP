@@ -1,6 +1,7 @@
 from flask import Blueprint
 from flask_restful import Api
 
+from .api_token_auth import GenTokenResource
 from .dislike import DisLikesResource, DisLikeResource
 from .like import LikesResource, LikeResource
 from .profile import ProfileResource
@@ -22,3 +23,4 @@ api.add_resource(LikesResource, '/likes', endpoint='likes_list')
 api.add_resource(LikeResource, '/likes/<int:like_id>', endpoint='like_detail')
 api.add_resource(DisLikesResource, '/dislikes', endpoint='dislikes_list')
 api.add_resource(DisLikeResource, '/dislikes/<int:dislike_id>', endpoint='dislike_detail')
+api.add_resource(GenTokenResource, '/gen_token', endpoint='gen_token')
