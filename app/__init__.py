@@ -1,4 +1,5 @@
 from flask import Flask
+from flask_jwt_extended import JWTManager
 from flask_login import current_user, LoginManager
 from config import Config
 from flask_sqlalchemy import SQLAlchemy
@@ -7,6 +8,7 @@ from flask_migrate import Migrate
 db = SQLAlchemy()
 migrate = Migrate()
 login_manager = LoginManager()
+jwt = JWTManager()
 
 
 def create_app():
@@ -28,6 +30,7 @@ def create_app():
     from .api import bp as api_bp
     app.register_blueprint(api_bp)
     login_manager.init_app(app)
+    jwt.init_app(app)
 
     @login_manager.user_loader
     def load_user(user_id):
