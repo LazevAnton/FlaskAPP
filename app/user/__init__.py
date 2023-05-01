@@ -1,11 +1,10 @@
 from pathlib import Path
 
 from flask import Blueprint
-from sqlalchemy import func
 
 import config
 from .. import db
-from ..models import User, Profile
+from ..models import User
 import pandas as pd
 
 bp = Blueprint('user', __name__, url_prefix='/user')
@@ -25,5 +24,7 @@ def extract_users():
             }
         )
     df = pd.DataFrame(user_data, columns=['UserName', 'Email', 'FullName', 'PostCount'])
-    df.to_csv(Path(config.Config.basedir)/ 'users.csv')
+    df.to_csv(Path(config.Config.BASEDIR) / 'users.csv')
+
+
 from . import routes  # noqa
