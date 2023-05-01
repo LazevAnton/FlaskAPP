@@ -1,6 +1,7 @@
 from datetime import datetime
 from hashlib import md5
 
+from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy.orm import joinedload
 
 from app import db
@@ -123,7 +124,11 @@ class Profile(BaseModel):
     facebook_url = db.Column(db.String)
     linkedIn_url = db.Column(db.String)
 
-    user = db.relationship("User", backref=db.backref("profile", uselist=False), uselist=False)
+    user = db.relationship("User", backref=db.backref("profile", uselist=False, lazy='joined'), uselist=False)
+
+    @hybrid_property
+    def fullname(self):
+        return f'{self.first_name} {self.last_name}'
 
 
 class Post(BaseModel):
