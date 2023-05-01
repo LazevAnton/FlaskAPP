@@ -19,3 +19,4 @@ class Config:
         POSTGRES_DATABASE
     )
     JWT_ACCESS_TOKEN_EXPIRES = datetime.timedelta(hours=1)
+    BASEDIR = os.path.join(os.path.dirname(__file__))
