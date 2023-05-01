@@ -1,6 +1,7 @@
 from flask import Flask
 from flask_jwt_extended import JWTManager
 from flask_login import current_user, LoginManager
+
 from config import Config
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
@@ -23,7 +24,7 @@ def create_app():
     from . import models
     from .fake_data import bp as fake_bp
     app.register_blueprint(fake_bp)
-    from . user import bp as user_bp
+    from .user import bp as user_bp
     app.register_blueprint(user_bp)
     from .post import bp as post_bp
     app.register_blueprint(post_bp)
