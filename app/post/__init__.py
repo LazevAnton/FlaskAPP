@@ -32,7 +32,7 @@ def extract_posts(user_id):
                 }
             )
         df = pd.DataFrame(post_info, columns=['PostTitle', 'Likes', 'Dislikes', 'CreatedAT'])
-        df.to_csv(Path(config.Config.BASEDIR) / f'{user_name}_post_info.csv')
+        df.to_csv(Path(config.Config.BASEDIR) / f'{user_name}_posts_info.csv')
     else:
         print('Error! User didnt found')
 
