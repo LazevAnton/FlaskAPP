@@ -15,7 +15,7 @@ bp = Blueprint('post', __name__, url_prefix='/post')
 @click.argument('user_id', type=int)
 def extract_posts(user_id):
     post_info = []
-    user_name = db.session.query(User).filter(User.id == user_id).first()
+    user_name = db.session.query(User.username).filter(User.id == user_id).scalar()
     if user_name:
         posts = db.session.query(Post).filter(Post.author_id == user_id).all()
         for post in posts:
