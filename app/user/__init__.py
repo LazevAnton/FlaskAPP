@@ -27,4 +27,4 @@ def extract_users():
     df.to_csv(Path(config.Config.BASEDIR) / 'users.csv')
 
 
-from . import routes  # noqa
+from . import routes  # noqa.
